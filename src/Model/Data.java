@@ -18,8 +18,8 @@ public class Data {
     private ArrayList<String> label;
     
     public Data(){
-      this.fitur = new ArrayList<Fitur>();    
-      this.label = new ArrayList<String>();
+      this.fitur = new ArrayList<>();    
+      this.label = new ArrayList<>();
     }
     
     public void tambah_fitur(Fitur fitur){
