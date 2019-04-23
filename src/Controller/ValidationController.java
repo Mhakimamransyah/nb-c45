@@ -152,6 +152,10 @@ public class ValidationController extends SwingWorker{
         
         Data data_latih = this.getPartData(0, posisi_akhir_data_latih,"");
         Data data_uji   = this.getPartData(posisi_akhir_data_latih, this.data.getJumlahData(),"");
+        for (int i = 0; i < this.data.getJumlahFitur(); i++) {
+            data_latih.getFitur().get(i).setNama_fitur(this.data.getFitur().get(i).getNama_fitur());
+            data_uji.getFitur().get(i).setNama_fitur(this.data.getFitur().get(i).getNama_fitur());
+        }
         this.writeLogProcess("Jumlah Data Latih : "+data_latih.getJumlahData());
         this.writeJumlahSebaranLabel(data_latih, "Latih");
         this.writeLogProcess(" ");

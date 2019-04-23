@@ -165,8 +165,8 @@
         <Container class="javax.swing.JPanel" name="Dashboard">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Dahsboard">
-                <Property name="tabTitle" type="java.lang.String" value="Dahsboard"/>
+              <JTabbedPaneConstraints tabName="Dashboard">
+                <Property name="tabTitle" type="java.lang.String" value="Dashboard"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -393,6 +393,9 @@
                                         <Component class="javax.swing.JSpinner" name="split_ratio">
                                           <Properties>
                                             <Property name="toolTipText" type="java.lang.String" value="Split Ratio (%)"/>
+                                            <Property name="value" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                              <Connection code="70" type="code"/>
+                                            </Property>
                                           </Properties>
                                           <Constraints>
                                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -458,6 +461,9 @@
                                         <Component class="javax.swing.JSpinner" name="kfold">
                                           <Properties>
                                             <Property name="toolTipText" type="java.lang.String" value="K-fold"/>
+                                            <Property name="value" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                              <Connection code="10" type="code"/>
+                                            </Property>
                                           </Properties>
                                           <Constraints>
                                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

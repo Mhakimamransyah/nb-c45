@@ -249,6 +249,8 @@ public class PanelData extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Label", jPanel4);
 
+        jTabbedPane1.setSelectedIndex(1);
+
         jPanel5.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         data.add(jPanel5);

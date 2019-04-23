@@ -249,6 +249,7 @@ public class Home extends javax.swing.JFrame {
         jPanel11.setLayout(new java.awt.BorderLayout());
 
         split_ratio.setToolTipText("Split Ratio (%)");
+        split_ratio.setValue(70);
         jPanel11.add(split_ratio, java.awt.BorderLayout.CENTER);
 
         split.add(jPanel11);
@@ -274,6 +275,7 @@ public class Home extends javax.swing.JFrame {
         jPanel23.setLayout(new java.awt.BorderLayout());
 
         kfold.setToolTipText("K-fold");
+        kfold.setValue(10);
         jPanel23.add(kfold, java.awt.BorderLayout.CENTER);
 
         cross.add(jPanel23);
@@ -492,7 +494,7 @@ public class Home extends javax.swing.JFrame {
 
         Dashboard.add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("Dahsboard", Dashboard);
+        jTabbedPane1.addTab("Dashboard", Dashboard);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 

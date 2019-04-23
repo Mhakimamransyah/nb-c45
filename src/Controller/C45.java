@@ -47,6 +47,7 @@ public class C45 {
     
     private void buildTree(Data data, Node parent) {
         if (data.getJumlahData() <= 0) {
+            System.out.println("EXIT: NUMBER OF RECORDS 0");
             return;
         }
         
@@ -59,6 +60,7 @@ public class C45 {
         
         Map<String, Double> attributeGain = this.calculateAttributeGain(data, 
                 excludedAttributes);
+        System.out.println(attributeGain);
         Map<String, Double> currentLevelSplits = 
                 new HashMap<>(this.attributeSplits);
         
@@ -69,9 +71,9 @@ public class C45 {
         List<Map.Entry<String, Double>> sortedAttr = 
                 MathFx.sortMapDouble(attributeGain, "DESC");
         Map.Entry<String, Double> entry = sortedAttr.get(0);
+        
         String attr = entry.getKey();
         final String ATTRIBUTE_TYPE = data.getFitur().get(0).getTipe();
-        
         if (this.attributeValue.containsKey(attr)) {
             Type t = null;
             AttributeType at = null;
@@ -82,14 +84,17 @@ public class C45 {
                 t = Type.ROOT;
                 node.setType(t);
                 this.tree = node;
+                System.out.println("ATTACH ROOT");
             } else {
                 parent.setAttribute(attr);
                 node = parent;
                 t = Type.BRANCH;
                 node.setType(t);
+                System.out.println("ATTACH BRANCH");
             }
             
             switch (ATTRIBUTE_TYPE.toLowerCase()) {
+                //<editor-fold defaultstate="collapsed" desc="continuous split">
                 case "kontinu":
                     node.setAttributeType(AttributeType.CONTINUOUS);
                     if (currentLevelSplits.containsKey(attr)) {
@@ -140,13 +145,18 @@ public class C45 {
                         node.setRightChild(rightChild);
                     }
                     break;
-
+                //</editor-fold>
+                    
                 case "kategori/ordinal":
+                    System.out.println("TYPE: CATEGORICAL");
                     node.setAttributeType(AttributeType.DISCRETE);
                     //<editor-fold defaultstate="collapsed" desc="discrete split">
                     Set<String> attrValue = this.attributeValue.get(attr);
+                    System.out.println(attr + " VALUES: " + attrValue);
                     for (String val : attrValue) {
+                        System.out.println("GET BIN FOR " + val);
                         Map<String, Data> bin = this.getBin(data, attr, val);
+                        System.out.println(val + " ~> " + bin);
                         Node child = new Node();
                         child.setExcludedAttributes(excludedAttributes);
                         if (bin.size() == 1) {
@@ -159,6 +169,7 @@ public class C45 {
                             child.setType(Type.BRANCH);
                             Data childData = null;
                             for (Map.Entry<String, Data> e : bin.entrySet()) {
+                                System.out.println("DATA ENTRY FOR CHILD");
                                 if (childData == null) {
                                     childData = e.getValue();
                                 } else {
@@ -185,6 +196,7 @@ public class C45 {
 
                             if (childData != null && 
                                     childData.getJumlahData() > 0) {
+                                System.out.println("call build tree");
                                 this.buildTree(childData, child);
                             }
                         }
@@ -203,12 +215,12 @@ public class C45 {
         Map<String, Data> dist = new HashMap<>();
         final int NUM_ATTRIBUTES = data.getJumlahFitur();
         final int attrIdx = data.getFitur().indexOf(attr);
-        
         for (int i = 0; i < data.getJumlahData(); i++) {
+            System.out.println("for loop " + i);
             String value = data.getFitur().get(attrIdx).getKolom_nilai().get(i);
             String label = data.getFitur().get(NUM_ATTRIBUTES - 1)
                     .getKolom_nilai().get(i);
-            
+            System.out.println("BIN VALUE " + attr + ": " + value);
             Data bin;
             if (dist.containsKey(label)) {
                 bin = dist.get(label);
@@ -232,7 +244,7 @@ public class C45 {
                             .get(j).getKolom_nilai().get(i));
                 }
             }
-            
+            System.out.println(label + " ~dist~>> " + bin);
             dist.put(label, bin);
         }
         return dist;
@@ -256,6 +268,7 @@ public class C45 {
                         break;
                         
                     case "kategori/ordinal":
+                        System.out.println("PUT GAIN " + attr);
                         attributeGain.put(attr, this.calculateGain(data, attr));
                         break;
                 }
@@ -541,6 +554,7 @@ public class C45 {
                                             .get(0);
                     
                     Node childNode;
+                    System.out.println("NODE ATTR TYPE: " + node.getAttributeType().toString());
                     switch (node.getAttributeType()) {
                         case CONTINUOUS:
                             final double threshold = Double.parseDouble(VALUE);
@@ -557,6 +571,7 @@ public class C45 {
                             childNode = childs.get(VALUE);
                             if (childNode.getAttribute() == null) {
                                 if (childNode.getLabel() == null) {
+                                    
                                     return "";
                                 }
                             }
@@ -571,11 +586,13 @@ public class C45 {
             }
         }
         
+        System.out.println("hehe");
         return "";
     }
     
     public MatrixConfussion doC45(Data latih, Data uji){
         
+        System.out.println("DOC45");
         this.fit(latih);
         
 //        // Akses untuk setiap kolom/fitur data (termaksud label)
@@ -591,7 +608,7 @@ public class C45 {
 //                latih.getFitur().get(j).getKolom_nilai().get(i);
 //            }
 //        }
-        System.out.println("DOC45");
+        
         for (int i = 0; i < uji.getJumlahData(); i++) {
             Data row = new Data();
             for (int j = 0; j < uji.getJumlahFitur(); j++) {
