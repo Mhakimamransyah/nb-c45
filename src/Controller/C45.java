@@ -575,25 +575,41 @@ public class C45 {
     }
     
     public MatrixConfussion doC45(Data latih, Data uji){
-               
-        // Akses untuk setiap kolom/fitur data (termaksud label)
-        for(Fitur fitur : latih.getFitur()){
-            // Kolom/Fitur ke - n
-            for(String nilai : fitur.getKolom_nilai()){
-                // Nilainya
-            }    
-        }
-        // Akses untuk setiap baris data (termaksud label)
-        for(int i=0;i<latih.getJumlahData();i++){
-            for(int j=0;j<latih.getFitur().size();j++){
-                latih.getFitur().get(j).getKolom_nilai().get(i);
+        
+        this.fit(latih);
+        
+//        // Akses untuk setiap kolom/fitur data (termaksud label)
+//        for(Fitur fitur : latih.getFitur()){
+//            // Kolom/Fitur ke - n
+//            for(String nilai : fitur.getKolom_nilai()){
+//                // Nilainya
+//            }    
+//        }
+//        // Akses untuk setiap baris data (termaksud label)
+//        for(int i=0;i<latih.getJumlahData();i++){
+//            for(int j=0;j<latih.getFitur().size();j++){
+//                latih.getFitur().get(j).getKolom_nilai().get(i);
+//            }
+//        }
+        System.out.println("DOC45");
+        for (int i = 0; i < uji.getJumlahData(); i++) {
+            Data row = new Data();
+            for (int j = 0; j < uji.getJumlahFitur(); j++) {
+                row.getFitur().add(uji.getFitur().get(j));
+                row.getFitur().get(j).getKolom_nilai().add(
+                        uji.getFitur().get(j).getKolom_nilai().get(i));
             }
+            String predicted = this.predict(row);
+            String actual = uji.getFitur().get(uji.getJumlahFitur() - 1)
+                            .getKolom_nilai().get(i);
+            System.out.println(actual + "::" + predicted + " --> " + (actual.equals(predicted)));
+            this.matriks.setMatriksConfussion(predicted, actual);
         }
         
         // Untuk Mengisi Matriks Confussion
         // this.matriks.setMatriksConfussion(Output,Aktual);
       
-        return matriks;
+        return this.matriks;
     }
     
 }
