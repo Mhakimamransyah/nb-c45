@@ -45,6 +45,102 @@ public class C45 {
         this.buildTree(latih, null);
     }
     
+    private void displayTree() {
+        Integer level = 0;
+        this.traverseTree(this.tree, level);
+    }
+    
+    private void traverseTree(Node node, Integer level) {
+        if (node == null) {
+            return;
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < level; i++) {
+            sb.append("\t");
+        }
+        
+        switch (node.getType()) {
+            case ROOT:
+            case BRANCH:
+                System.out.println(sb + node.getAttribute());
+                Map<String, Node> childs = node.getChilds();
+                for (Map.Entry<String, Node> e : childs.entrySet()) {
+                    System.out.println(sb + "Traverse to " + e.getKey());
+                    this.traverseTree(e.getValue(), level + 1);
+                }
+                break;
+                
+            case LEAF:
+                System.out.println(sb + "LABEL: " + node.getLabel());
+                break;
+        }
+    }
+    
+    public String predict(Data data) {
+        for (int i = 0; i < data.getJumlahData(); i++) {
+            for (int j = 0; j < data.getJumlahFitur(); j++) {
+                System.out.print(data.getFitur().get(j).getKolom_nilai().get(i) + ", ");
+            }
+            System.out.println();
+        }
+        return this.traverse(this.tree, data, null);
+    }
+    
+    private String traverse(Node node, Data data, String attr) {
+        System.out.println("NODE ATTR " + attr + ": " + (node != null));
+        if (node != null) {
+
+            switch (node.getType()) {
+                case ROOT:
+                case BRANCH:
+                    if (attr == null) {
+                        attr = node.getAttribute();
+                        System.out.println("SET ATTR: " + attr);
+                    }
+                    final int ATTRIBUTE_INDEX = 
+                            this.getFiturIndexByName(data, attr);
+                    final String VALUE = data.getFitur()
+                                            .get(ATTRIBUTE_INDEX)
+                                            .getKolom_nilai()
+                                            .get(0);
+                    
+                    Node childNode;
+                    System.out.println("NODE ATTR TYPE: " + node.getAttributeType().toString());
+                    switch (node.getAttributeType()) {
+                        case CONTINUOUS:
+                            final double threshold = Double.parseDouble(VALUE);
+                            if (threshold < node.getThreshold()) {
+                                childNode = node.getLeftChild();
+                            } else {
+                                childNode = node.getRightChild();
+                            }
+                            return this.traverse(childNode, data, 
+                                    childNode.getAttribute());
+                            
+                        case DISCRETE:
+                            Map<String, Node> childs = node.getChilds();
+                            childNode = childs.get(VALUE);
+                            System.out.println("TRAVERSE TO VALUE: " + VALUE);
+                            if (childNode.getAttribute() == null) {
+                                if (childNode.getLabel() == null) {
+                                    return "h3h3";
+                                }
+                            }
+                            return this.traverse(childNode, data, 
+                                    childNode.getAttribute());
+                    }
+                    
+                    break;
+                
+                case LEAF:
+                    return node.getLabel();
+            }
+        }
+        
+        return "h1h1";
+    }
+    
     private void buildTree(Data data, Node parent) {
         if (data.getJumlahData() <= 0) {
             System.out.println("EXIT: NUMBER OF RECORDS 0");
@@ -60,7 +156,8 @@ public class C45 {
         
         Map<String, Double> attributeGain = this.calculateAttributeGain(data, 
                 excludedAttributes);
-        System.out.println(attributeGain);
+        System.out.println("EXCLUDED ATTRIBUTES: " + excludedAttributes);
+        System.out.println("ATTRIBUTE GAINS: " + attributeGain);
         Map<String, Double> currentLevelSplits = 
                 new HashMap<>(this.attributeSplits);
         
@@ -152,33 +249,56 @@ public class C45 {
                     node.setAttributeType(AttributeType.DISCRETE);
                     //<editor-fold defaultstate="collapsed" desc="discrete split">
                     Set<String> attrValue = this.attributeValue.get(attr);
-                    System.out.println(attr + " VALUES: " + attrValue);
+//                    System.out.println(attr + " VALUES: " + attrValue);
                     for (String val : attrValue) {
-                        System.out.println("GET BIN FOR " + val);
+//                        System.out.println("GET BIN FOR " + val);
                         Map<String, Data> bin = this.getBin(data, attr, val);
-                        System.out.println(val + " ~> " + bin);
+                        Map<String, Data> tempBin = new HashMap<>(bin); // for removing purpose
+                        for (Map.Entry<String, Data> e : tempBin.entrySet()) {
+                            if (e.getValue().getJumlahFitur() <= 0) {
+                                System.out.println("REMOVING " + e.getKey() + 
+                                        " BECAUSE ATTR NUM " + e.getValue().getJumlahFitur());
+                                bin.remove(e.getKey());
+                            }
+                        }
+                            
+//                        System.out.println(val + " ~> " + bin);
                         Node child = new Node();
                         child.setExcludedAttributes(excludedAttributes);
+//                        System.out.println("BINSIZE: " + bin.size());
+                        System.out.println("BINSIZE");
                         if (bin.size() == 1) {
                             child.setType(Type.LEAF);
                             child.setLabel(bin.entrySet()
                                         .iterator()
                                         .next()
                                         .getKey());
+                            System.out.println("CREATE LEAF NODE");
                         } else {
                             child.setType(Type.BRANCH);
                             Data childData = null;
                             for (Map.Entry<String, Data> e : bin.entrySet()) {
                                 System.out.println("DATA ENTRY FOR CHILD");
+                                Data nodeData = e.getValue();
+                                if (nodeData.getJumlahFitur() <= 0) {
+                                    System.out.println("NUMATTR 0");
+                                    continue;
+                                }
+                                
                                 if (childData == null) {
+                                    System.out.println("IFNODEATTR: " + e.getValue().getJumlahFitur());
+                                    System.out.println("IFNODENUMATTR: " + e.getValue().getJumlahData());
                                     childData = e.getValue();
                                 } else {
-
-                                    Data nodeData = e.getValue();
+                                    System.out.println("ELSENODE");
+                                    
                                     final int NUM_ATTRIBUTES = e.getValue()
                                             .getJumlahFitur();
+                                    System.out.println("NODENUMATTR: " + NUM_ATTRIBUTES);
+                                    System.out.println("NODENUMDATA: " + nodeData.getJumlahData());
                                     for (int i = 0; i < nodeData
                                             .getJumlahData(); i++) {
+                                        System.out.println("CHILSATTRSNUM: " + childData.getJumlahFitur());
                                         for (int j = 0; j < NUM_ATTRIBUTES; 
                                                 j++) {
                                             childData.getFitur()
@@ -193,14 +313,16 @@ public class C45 {
 
                                 }
                             }
-
+                            System.out.println("ENDENTRYCHILD");
                             if (childData != null && 
+                                    childData.getJumlahFitur() > 0 && 
                                     childData.getJumlahData() > 0) {
                                 System.out.println("call build tree");
                                 this.buildTree(childData, child);
                             }
                         }
-
+                        
+                        System.out.println("CHILD ATTR: " + child.getAttribute());
                         node.addChild(val, child);
                     }
                     // </editor-fold>
@@ -211,16 +333,27 @@ public class C45 {
         }
     }
     
+    private int getFiturIndexByName(Data data, String attr) {
+        for (int i = 0; i < data.getJumlahFitur(); i++) {
+            if (data.getFitur().get(i).getNama_fitur().equals(attr)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
     private Map<String, Data> getBin(Data data, String attr, String binValue) {
         Map<String, Data> dist = new HashMap<>();
         final int NUM_ATTRIBUTES = data.getJumlahFitur();
-        final int attrIdx = data.getFitur().indexOf(attr);
+        
+        final int attrIdx = this.getFiturIndexByName(data, attr);
+        System.out.println("ATTRIDX: " + attrIdx);
+        System.out.println("JUMLAH: " + data.getJumlahData());
         for (int i = 0; i < data.getJumlahData(); i++) {
-            System.out.println("for loop " + i);
+            System.out.println(data.getJumlahFitur() + " :: " + data.getFitur().get(attrIdx).getKolom_nilai().get(i));
             String value = data.getFitur().get(attrIdx).getKolom_nilai().get(i);
             String label = data.getFitur().get(NUM_ATTRIBUTES - 1)
                     .getKolom_nilai().get(i);
-            System.out.println("BIN VALUE " + attr + ": " + value);
             Data bin;
             if (dist.containsKey(label)) {
                 bin = dist.get(label);
@@ -235,6 +368,7 @@ public class C45 {
                         newAttr = new Fitur();
                         newAttr.setNama_fitur(data.getFitur().get(j)
                                 .getNama_fitur());
+                        newAttr.setTipe(data.getFitur().get(j).getTipe());
                         if (j == NUM_ATTRIBUTES - 1) {
                             newAttr.setTipe("Label");
                         }
@@ -244,20 +378,25 @@ public class C45 {
                             .get(j).getKolom_nilai().get(i));
                 }
             }
-            System.out.println(label + " ~dist~>> " + bin);
+//            System.out.println(label + " ~dist~>> " + bin);
             dist.put(label, bin);
         }
+        
+        System.out.println("ENDFORDIST");
         return dist;
     }
     
     private Map<String, Double> calculateAttributeGain(Data data, 
             Set<String> excludedAttributes) {
         Map<String, Double> attributeGain = new HashMap<>();
+//        System.out.println("ATTRS TO BE USED TO CALCULATE GAIN: " + data.getJumlahFitur());
         for (int i = 0; i < data.getFitur().size(); i++) {
             String attr = data.getFitur().get(i).getNama_fitur();
             if (excludedAttributes == null || 
                     !excludedAttributes.contains(attr)) {
                 String attributeType = data.getFitur().get(i).getTipe();
+//                System.out.println("CALCULATE GAIN: " + attr);
+//                System.out.println("CALCULATE GAIN TYPE: " + attributeType);
                 switch (attributeType.toLowerCase()) {
                     case "kontinu":
                         Map.Entry<String, Double> entry = 
@@ -268,7 +407,7 @@ public class C45 {
                         break;
                         
                     case "kategori/ordinal":
-                        System.out.println("PUT GAIN " + attr);
+//                        System.out.println("PUT GAIN " + attr);
                         attributeGain.put(attr, this.calculateGain(data, attr));
                         break;
                 }
@@ -279,7 +418,7 @@ public class C45 {
     }
     
     private List<Data> splitBranch(Data data, String attr, double split) {
-        final int attrIdx = data.getFitur().indexOf(attr);
+        final int attrIdx = this.getFiturIndexByName(data, attr);
         final int NUM_ATTRIBUTES = data.getJumlahFitur();
         Data left = new Data();
         Data right = new Data();
@@ -336,7 +475,7 @@ public class C45 {
     
     private Map.Entry<String, Double> 
         calculateGainContinuous(Data data, String attr) {
-        int attrIdx = data.getFitur().indexOf(attr);
+        int attrIdx = this.getFiturIndexByName(data, attr);
         List<Double> splits = MathFx.getPossibleSplitsStr(data.getFitur()
                 .get(attrIdx).getKolom_nilai());
         Map<String, Double> temporaryGain = new HashMap<>();
@@ -533,99 +672,48 @@ public class C45 {
         return map;
     }
     
-    public String predict(Data data) {
-        return this.traverse(this.tree, data, null);
-    }
-    
-    private String traverse(Node node, Data data, String attr) {
-        if (node != null) {
-
-            switch (node.getType()) {
-                case ROOT:
-                case BRANCH:
-                    if (attr == null) {
-                        attr = node.getAttribute();
-                    }
-                    final int ATTRIBUTE_INDEX = data.getFitur()
-                                                .indexOf(attr);
-                    final String VALUE = data.getFitur()
-                                            .get(ATTRIBUTE_INDEX)
-                                            .getKolom_nilai()
-                                            .get(0);
-                    
-                    Node childNode;
-                    System.out.println("NODE ATTR TYPE: " + node.getAttributeType().toString());
-                    switch (node.getAttributeType()) {
-                        case CONTINUOUS:
-                            final double threshold = Double.parseDouble(VALUE);
-                            if (threshold < node.getThreshold()) {
-                                childNode = node.getLeftChild();
-                            } else {
-                                childNode = node.getRightChild();
-                            }
-                            return this.traverse(childNode, data, 
-                                    childNode.getAttribute());
-                            
-                        case DISCRETE:
-                            Map<String, Node> childs = node.getChilds();
-                            childNode = childs.get(VALUE);
-                            if (childNode.getAttribute() == null) {
-                                if (childNode.getLabel() == null) {
-                                    
-                                    return "";
-                                }
-                            }
-                            return this.traverse(childNode, data, 
-                                    childNode.getAttribute());
-                    }
-                    
-                    break;
-                
-                case LEAF:
-                    return node.getLabel();
-            }
-        }
-        
-        System.out.println("hehe");
-        return "";
-    }
-    
     public MatrixConfussion doC45(Data latih, Data uji){
+        
+        // COBA DATA LATIH DAN UJI DI-CLONE
         
         System.out.println("DOC45");
         this.fit(latih);
+        System.out.println("TRAINING COMPLETE");
+        this.displayTree();
         
-//        // Akses untuk setiap kolom/fitur data (termaksud label)
-//        for(Fitur fitur : latih.getFitur()){
-//            // Kolom/Fitur ke - n
-//            for(String nilai : fitur.getKolom_nilai()){
-//                // Nilainya
-//            }    
-//        }
-//        // Akses untuk setiap baris data (termaksud label)
-//        for(int i=0;i<latih.getJumlahData();i++){
-//            for(int j=0;j<latih.getFitur().size();j++){
-//                latih.getFitur().get(j).getKolom_nilai().get(i);
+//        for (int i = 0; i < uji.getJumlahData(); i++) {
+//            System.out.println("ROW " + i);
+//            for (int j = 0; j < uji.getJumlahFitur(); j++) {
+//                System.out.print(uji.getFitur().get(j).getKolom_nilai().get(i) + ", ");
 //            }
+//            System.out.println();
 //        }
         
-        for (int i = 0; i < uji.getJumlahData(); i++) {
+        System.out.println("JUMLAH DATA UJI: " + uji.getJumlahData());
+        final int NUM_ROWS = uji.getJumlahData();
+        final int NUM_ATTRS = uji.getJumlahFitur();
+        for (int i = 0; i < NUM_ROWS; i++) {
+            
+            System.out.println("FOR LOOP " + i);
+
             Data row = new Data();
-            for (int j = 0; j < uji.getJumlahFitur(); j++) {
-                row.getFitur().add(uji.getFitur().get(j));
+            for (int j = 0; j < NUM_ATTRS; j++) {
+                Fitur newAttr = new Fitur();
+                newAttr.setTipe(uji.getFitur().get(j).getTipe());
+                newAttr.setNama_fitur(uji.getFitur().get(j).getNama_fitur());
+                row.getFitur().add(newAttr);
                 row.getFitur().get(j).getKolom_nilai().add(
                         uji.getFitur().get(j).getKolom_nilai().get(i));
             }
+            System.out.println("ROWDATANUM: " + row.getJumlahData());
             String predicted = this.predict(row);
+            System.out.println("PREDICTED LABEL: " + predicted);
             String actual = uji.getFitur().get(uji.getJumlahFitur() - 1)
                             .getKolom_nilai().get(i);
             System.out.println(actual + "::" + predicted + " --> " + (actual.equals(predicted)));
             this.matriks.setMatriksConfussion(predicted, actual);
         }
         
-        // Untuk Mengisi Matriks Confussion
-        // this.matriks.setMatriksConfussion(Output,Aktual);
-      
         return this.matriks;
     }
     

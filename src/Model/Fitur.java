@@ -6,17 +6,29 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author M.Hakim Amransyah
  */
-public class Fitur {
+public class Fitur implements Cloneable {
     
     private String nilai;
     private String tipe = "belum diatur";
     private String nama_fitur;
     private ArrayList<String> kolom_nilai;
+    
+    public Object clone() {
+        Fitur f = null;
+        try {
+            f = (Fitur)super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Fitur.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return f;
+    }
     
     public Fitur(){
         this.kolom_nilai = new ArrayList<String>();
