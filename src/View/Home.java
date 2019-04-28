@@ -218,6 +218,7 @@ public class Home extends javax.swing.JFrame {
         atur_Data.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/data_icon.png"))); // NOI18N
         atur_Data.setText("Atur Data");
         atur_Data.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        atur_Data.setFocusPainted(false);
         atur_Data.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 atur_DataActionPerformed(evt);
@@ -240,6 +241,7 @@ public class Home extends javax.swing.JFrame {
         split_validation.setSelected(true);
         split_validation.setText("Split Validation");
         split_validation.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        split_validation.setFocusPainted(false);
         split_validation.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel10.add(split_validation, java.awt.BorderLayout.CENTER);
 
@@ -266,6 +268,7 @@ public class Home extends javax.swing.JFrame {
         cross_validation.setFont(new java.awt.Font("Century Gothic", 0, 11)); // NOI18N
         cross_validation.setText("Cross Validation");
         cross_validation.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cross_validation.setFocusPainted(false);
         cross_validation.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel22.add(cross_validation, java.awt.BorderLayout.CENTER);
 
@@ -293,6 +296,7 @@ public class Home extends javax.swing.JFrame {
         supply_test.setFont(new java.awt.Font("Century Gothic", 0, 11)); // NOI18N
         supply_test.setText("Supply Test");
         supply_test.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        supply_test.setFocusPainted(false);
         supply_test.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel12.add(supply_test, java.awt.BorderLayout.CENTER);
 
@@ -305,6 +309,7 @@ public class Home extends javax.swing.JFrame {
         atur_supply_test.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/data_icon.png"))); // NOI18N
         atur_supply_test.setText("Atur Data");
         atur_supply_test.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        atur_supply_test.setFocusPainted(false);
         atur_supply_test.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 atur_supply_testActionPerformed(evt);
@@ -331,6 +336,7 @@ public class Home extends javax.swing.JFrame {
         jPanel14.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel14.setLayout(new javax.swing.BoxLayout(jPanel14, javax.swing.BoxLayout.PAGE_AXIS));
 
+        jPanel17.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel17.setPreferredSize(new java.awt.Dimension(282, 5));
         jPanel17.setLayout(new java.awt.BorderLayout());
 
@@ -345,6 +351,8 @@ public class Home extends javax.swing.JFrame {
         MC.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Matriks Confussion Naive Bayes", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         MC.setPreferredSize(new java.awt.Dimension(282, 150));
         MC.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane2.setEnabled(false);
 
         matrix_conf_NB.setBackground(new java.awt.Color(0, 0, 0));
         matrix_conf_NB.setForeground(new java.awt.Color(255, 255, 255));
@@ -402,6 +410,7 @@ public class Home extends javax.swing.JFrame {
         do_naive_bayes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/start.png"))); // NOI18N
         do_naive_bayes.setText("Naive Bayes");
         do_naive_bayes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        do_naive_bayes.setFocusPainted(false);
         do_naive_bayes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 do_naive_bayesActionPerformed(evt);
@@ -422,6 +431,7 @@ public class Home extends javax.swing.JFrame {
         jPanel18.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel18.setLayout(new javax.swing.BoxLayout(jPanel18, javax.swing.BoxLayout.PAGE_AXIS));
 
+        jPanel20.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel20.setPreferredSize(new java.awt.Dimension(282, 5));
         jPanel20.setLayout(new java.awt.BorderLayout());
 
@@ -436,6 +446,8 @@ public class Home extends javax.swing.JFrame {
         MC1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Matriks Confussion C4.5", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         MC1.setPreferredSize(new java.awt.Dimension(282, 150));
         MC1.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane3.setEnabled(false);
 
         matrix_conf_C45.setBackground(new java.awt.Color(0, 0, 0));
         matrix_conf_C45.setForeground(new java.awt.Color(255, 255, 255));
@@ -479,6 +491,7 @@ public class Home extends javax.swing.JFrame {
         doC45.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/start.png"))); // NOI18N
         doC45.setText("C4.5");
         doC45.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        doC45.setFocusPainted(false);
         doC45.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doC45ActionPerformed(evt);

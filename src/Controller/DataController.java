@@ -58,12 +58,13 @@ public class DataController {
               bf = new BufferedReader(new FileReader(f.getPath())); 
               bf.readLine();
             }
+            this.acakData();
        }
        
        return this.data;
     }
     
-    public void acakData(){
+    private void acakData(){
        long seed = System.nanoTime();
        for(int i=0;i<this.data.getJumlahFitur();i++){
            Collections.shuffle(this.data.getFitur().get(i).getKolom_nilai(), new Random(seed));
