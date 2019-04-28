@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author M.Hakim Amransyah
  */
-public class Data {
+public class Data implements Cloneable {
     
     private String nama_file;
     private ArrayList<Fitur> fitur;
@@ -20,6 +20,10 @@ public class Data {
     public Data(){
       this.fitur = new ArrayList<>();    
       this.label = new ArrayList<>();
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
     
     public void tambah_fitur(Fitur fitur){
@@ -39,6 +43,9 @@ public class Data {
     }
     
     public int getJumlahData(){
+        if (this.getJumlahFitur() <= 0) {
+            return 0;
+        }
        return this.fitur.get(0).getKolom_nilai().size();
     }
      

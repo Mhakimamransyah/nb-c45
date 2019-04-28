@@ -11,11 +11,14 @@ import Model.Node;
 import Model.Node.AttributeType;
 import Model.Node.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,6 +34,7 @@ public class C45 {
     private Map<String, Set<String>> attributeValue = new HashMap<>();
     private Node tree;
     private Map<String, Double> attributeSplits = new HashMap<>();
+    private int LABEL_INDEX = -1;
     
     public C45(MatrixConfussion matriks, ArrayList<String> label){
         this.matriks = matriks;
@@ -38,11 +42,22 @@ public class C45 {
     }
     
     private void fit(Data latih) {
-        this.trainData = latih;
-        this.classDistribution = this.countClassDistribution(latih);
+        this.LABEL_INDEX = latih.getJumlahFitur() - 1;
+        this.trainData = this.avoidReflection(latih);
+        this.classDistribution = this.countClassDistribution(this.avoidReflection(latih));
         this.calculateTotalEntropy();
-        this.setAttributeValues(latih);
-        this.buildTree(latih, null);
+        this.setAttributeValues(this.avoidReflection(latih));
+        this.buildTree(this.avoidReflection(latih), null);
+    }
+    
+    private Data avoidReflection(Data data) {
+        Data temp = null;
+        try {
+            temp = (Data)data.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(C45.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
     
     private void displayTree() {
@@ -105,7 +120,7 @@ public class C45 {
                                             .getKolom_nilai()
                                             .get(0);
                     
-                    Node childNode;
+                    Node childNode = null;
                     System.out.println("NODE ATTR TYPE: " + node.getAttributeType().toString());
                     switch (node.getAttributeType()) {
                         case CONTINUOUS:
@@ -114,6 +129,9 @@ public class C45 {
                                 childNode = node.getLeftChild();
                             } else {
                                 childNode = node.getRightChild();
+                            }
+                            if (childNode == null) {
+                                return "h4h4";
                             }
                             return this.traverse(childNode, data, 
                                     childNode.getAttribute());
@@ -152,6 +170,9 @@ public class C45 {
             excludedAttributes  = new HashSet<>();
         } else {
             excludedAttributes = parent.getExcludedAttributes();
+            if (excludedAttributes == null) {
+                excludedAttributes = new HashSet<>();
+            }
         }
         
         Map<String, Double> attributeGain = this.calculateAttributeGain(data, 
@@ -171,12 +192,15 @@ public class C45 {
         
         String attr = entry.getKey();
         final String ATTRIBUTE_TYPE = data.getFitur().get(0).getTipe();
+        System.out.println(attr + " ATTRTYPE: " + ATTRIBUTE_TYPE + ", " + this.attributeValue.containsKey(attr));
         if (this.attributeValue.containsKey(attr)) {
             Type t = null;
             AttributeType at = null;
             Node node = new Node(attr, t, at);
+            System.out.println(excludedAttributes);
             excludedAttributes.add(attr);
             node.setExcludedAttributes(excludedAttributes);
+            
             if (this.tree == null || parent == null) {
                 t = Type.ROOT;
                 node.setType(t);
@@ -187,7 +211,7 @@ public class C45 {
                 node = parent;
                 t = Type.BRANCH;
                 node.setType(t);
-                System.out.println("ATTACH BRANCH");
+                System.out.println("ATTACH BRANCH " + attr + " :: " + ATTRIBUTE_TYPE);
             }
             
             switch (ATTRIBUTE_TYPE.toLowerCase()) {
@@ -197,15 +221,25 @@ public class C45 {
                     if (currentLevelSplits.containsKey(attr)) {
                         node.setThreshold(currentLevelSplits.get(attr));
                     }
+                    final int attrIdx = this.getFiturIndexByName(data, attr);
+                    Data temp = this.avoidReflection(data);
                     
-                    List<Data> branches = this.splitBranch(data, attr, 
+                    List<Data> branches = this.splitBranch(temp, attrIdx, 
                             currentLevelSplits.get(attr));
+
                     Data left = branches.get(0);
                     Data right = branches.get(1);
                     
-                    Map<String, Integer> leftDistribution = 
-                            this.countClassDistribution(left);
+                    Data clonedLeft = this.avoidReflection(left);
+                    Data clonedRight = this.avoidReflection(right);
+                    
+                    System.out.println("LEFT: " + clonedLeft.getJumlahData() + ", RIGHT: " +
+                            clonedRight.getJumlahData());
+                    
+                    
                     if (left.getJumlahData() > 0) {
+                        Map<String, Integer> leftDistribution = 
+                            this.countClassDistribution(clonedLeft);
                         Node leftChild = new Node();
                         if (leftDistribution.size() == 1) {
                             // create leaf
@@ -216,31 +250,39 @@ public class C45 {
                         } else {
                             // create branch
                             leftChild.setType(Type.BRANCH);
-                            this.buildTree(left, leftChild);
+                            clonedLeft = this.avoidReflection(left);
+                            this.buildTree(clonedLeft, leftChild);
                         }
-                        
+
                         node.setLeftChild(leftChild);
                     }
                     
                     
-                    Map<String, Integer> rightDistribution = 
-                            this.countClassDistribution(right);
+                    
                     if (right.getJumlahData() > 0) {
+                        Map<String, Integer> rightDistribution = 
+                            this.countClassDistribution(clonedRight);
                         Node rightChild = new Node();
                         if (rightDistribution.size() == 1) {
                             // create leaf
+                            System.out.println("CREATE RIGHT LEAF START");
                             rightChild.setType(Type.LEAF);
                             List<String> key = new ArrayList<>(rightDistribution
                                     .keySet());
                             rightChild.setLabel(key.get(0));
+                            System.out.println("CREATE RIGHT LEAF END");
                         } else {
                             // create branch
+                            System.out.println("CREATE RIGHT BRANCH START");
                             rightChild.setType(Type.BRANCH);
-                            this.buildTree(right, rightChild);
+                            clonedRight = this.avoidReflection(right);
+                            System.out.println("CREATE RIGHT BRANCH END");
+                            this.buildTree(clonedRight, rightChild);
                         }
-                        
+
                         node.setRightChild(rightChild);
                     }
+                    
                     break;
                 //</editor-fold>
                     
@@ -347,10 +389,7 @@ public class C45 {
         final int NUM_ATTRIBUTES = data.getJumlahFitur();
         
         final int attrIdx = this.getFiturIndexByName(data, attr);
-        System.out.println("ATTRIDX: " + attrIdx);
-        System.out.println("JUMLAH: " + data.getJumlahData());
         for (int i = 0; i < data.getJumlahData(); i++) {
-            System.out.println(data.getJumlahFitur() + " :: " + data.getFitur().get(attrIdx).getKolom_nilai().get(i));
             String value = data.getFitur().get(attrIdx).getKolom_nilai().get(i);
             String label = data.getFitur().get(NUM_ATTRIBUTES - 1)
                     .getKolom_nilai().get(i);
@@ -389,16 +428,15 @@ public class C45 {
     private Map<String, Double> calculateAttributeGain(Data data, 
             Set<String> excludedAttributes) {
         Map<String, Double> attributeGain = new HashMap<>();
-//        System.out.println("ATTRS TO BE USED TO CALCULATE GAIN: " + data.getJumlahFitur());
         for (int i = 0; i < data.getFitur().size(); i++) {
             String attr = data.getFitur().get(i).getNama_fitur();
             if (excludedAttributes == null || 
                     !excludedAttributes.contains(attr)) {
                 String attributeType = data.getFitur().get(i).getTipe();
-//                System.out.println("CALCULATE GAIN: " + attr);
-//                System.out.println("CALCULATE GAIN TYPE: " + attributeType);
                 switch (attributeType.toLowerCase()) {
                     case "kontinu":
+                        System.out.println("PUT GAIN " + attr);
+                        // bug: if possible splits are zero ?
                         Map.Entry<String, Double> entry = 
                                 this.calculateGainContinuous(data, attr);
                         attributeGain.put(attr, entry.getValue());
@@ -407,7 +445,6 @@ public class C45 {
                         break;
                         
                     case "kategori/ordinal":
-//                        System.out.println("PUT GAIN " + attr);
                         attributeGain.put(attr, this.calculateGain(data, attr));
                         break;
                 }
@@ -417,15 +454,18 @@ public class C45 {
         return attributeGain;
     }
     
-    private List<Data> splitBranch(Data data, String attr, double split) {
-        final int attrIdx = this.getFiturIndexByName(data, attr);
+    private List<Data> splitBranch(Data data, final int attrIdx, double split) {
         final int NUM_ATTRIBUTES = data.getJumlahFitur();
         Data left = new Data();
         Data right = new Data();
         
+        Data temp = this.avoidReflection(data);
+        
+        final int NUM_ROWS = temp.getJumlahData();
+
         //<editor-fold defaultstate="collapsed" desc="split">
-        for (int i = 0; i < data.getJumlahData(); i++) {
-            double val = Double.parseDouble(data.getFitur().get(attrIdx)
+        for (int i = 0; i < NUM_ROWS; i++) {
+            double val = Double.parseDouble(temp.getFitur().get(attrIdx)
                     .getKolom_nilai().get(i));
             if (val > split) {
                 // right
@@ -433,15 +473,13 @@ public class C45 {
                     Fitur newAttr;
                     if (j >= right.getJumlahFitur()) {
                         newAttr = new Fitur();
-                        newAttr.setNama_fitur(data.getFitur().get(j)
+                        newAttr.setNama_fitur(temp.getFitur().get(j)
                                 .getNama_fitur());
-                        if (j == NUM_ATTRIBUTES - 1) {
-                            newAttr.setTipe("Label");
-                        }
+                        newAttr.setTipe(temp.getFitur().get(j).getTipe());
                         right.getFitur().add(newAttr);
                     }
 
-                    right.getFitur().get(j).getKolom_nilai().add(data
+                    right.getFitur().get(j).getKolom_nilai().add(temp
                             .getFitur().get(j).getKolom_nilai().get(i));
                 }
 
@@ -449,24 +487,32 @@ public class C45 {
                 // left
                 for (int j = 0; j < NUM_ATTRIBUTES; j++) {
                     Fitur newAttr;
-                    if (j >= right.getJumlahFitur()) {
+                    if (j >= left.getJumlahFitur()) {
                         newAttr = new Fitur();
-                        newAttr.setNama_fitur(data.getFitur().get(j)
+                        newAttr.setNama_fitur(temp.getFitur().get(j)
                                 .getNama_fitur());
-                        if (j == NUM_ATTRIBUTES - 1) {
-                            newAttr.setTipe("Label");
-                        }
+                        newAttr.setTipe(temp.getFitur().get(j).getTipe());
                         left.getFitur().add(newAttr);
                     }
 
-                    left.getFitur().get(j).getKolom_nilai().add(data
+                    left.getFitur().get(j).getKolom_nilai().add(temp
                             .getFitur().get(j).getKolom_nilai().get(i));
                 }
 
             }
+            
+            temp = this.avoidReflection(data);
         }
         //</editor-fold>
-    
+        
+        if (left.getJumlahData() == data.getJumlahData()) {
+            left = new Data();
+        }
+        
+        if (right.getJumlahData() == data.getJumlahData()) {
+            right = new Data();
+        }
+        
         List<Data> result = new ArrayList<>();
         result.add(left);
         result.add(right);
@@ -475,26 +521,38 @@ public class C45 {
     
     private Map.Entry<String, Double> 
         calculateGainContinuous(Data data, String attr) {
+        System.out.println("CALCULATE GAIN CONTINUOUS START");
         int attrIdx = this.getFiturIndexByName(data, attr);
         List<Double> splits = MathFx.getPossibleSplitsStr(data.getFitur()
                 .get(attrIdx).getKolom_nilai());
         Map<String, Double> temporaryGain = new HashMap<>();
-        
+        final int NUM_ROWS = data.getJumlahData();
+        System.out.println(Arrays.toString(splits.toArray()));
         for (double split : splits) {
-            List<Data> branches = this.splitBranch(data, attr, split);
+            Data temp = this.avoidReflection(data);
+            List<Data> branches = this.splitBranch(temp, attrIdx, split);
             Data left = branches.get(0);
             Data right = branches.get(1);
             
+            final int NUM_ROWS_LEFT = left.getJumlahData();
+            final int NUM_ROWS_RIGHT = right.getJumlahData();
+            
             double leftEntropy = this.calculateSplitEntropy(left);
             double rightEntropy = this.calculateSplitEntropy(right);
-            int totalData = data.getJumlahData();
-            double info = (left.getJumlahData() / totalData) * leftEntropy + 
-                    (right.getJumlahData() / totalData) * rightEntropy;
+            
+            double info = (NUM_ROWS_LEFT / NUM_ROWS) * leftEntropy + 
+                    (NUM_ROWS_RIGHT / NUM_ROWS) * rightEntropy;
             double gain = this.totalEntropy - info;
             temporaryGain.put(String.valueOf(split), gain);
         }
+        
+        if (temporaryGain.size() <= 0) {
+            temporaryGain.put("0", 0.0);
+        }
         List<Map.Entry<String, Double>> result = 
                 MathFx.sortMapDouble(temporaryGain, "DESC");
+        System.out.println("CALCULATE GAIN CONTINUOUS END " + result.size());
+        
         return result.get(0);
     }
     
@@ -518,11 +576,18 @@ public class C45 {
     }
     
     private double calculateSplitEntropy(Data data) {
+        Data temp = null;
+        try {
+            temp = (Data)data.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(C45.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Map<String, Integer> classDistribution = 
-                this.countClassDistribution(data);
+                this.countClassDistribution(temp);
         Double[] entropy = new Double[]{null};
+        final int NUM_ROWS = temp.getJumlahData();
         classDistribution.forEach((key, val) -> {
-            double divResult = (double)val / (double)data.getJumlahData();
+            double divResult = (double)val / (double)NUM_ROWS;
             double currentEntropy = divResult * Math.log(divResult);
             if (entropy[0] == null) {
                 entropy[0] = (-1) * currentEntropy;
@@ -659,8 +724,7 @@ public class C45 {
     
     private Map<String, Integer> countClassDistribution(Data data) {
         Map<String, Integer> map = new HashMap<>();
-        int classIdx = data.getFitur().size() - 1;
-        List<String> classes = data.getFitur().get(classIdx).getKolom_nilai();
+        List<String> classes = data.getFitur().get(this.LABEL_INDEX).getKolom_nilai();
         for (String cls : classes) {
             if (map.containsKey(cls)) {
                 int c = map.get(cls);

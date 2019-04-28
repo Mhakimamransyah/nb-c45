@@ -32,10 +32,13 @@ public class MathFx {
         List<Double> splits = new ArrayList<>();
         List<Double> parsedData = new ArrayList<>();
         for (String row : data) {
-            parsedData.add(Double.parseDouble(row));
+            double r = Double.parseDouble(row);
+            if (!parsedData.contains(r)) {
+                parsedData.add(Double.parseDouble(row));
+            }
         }
-        Collections.sort(data, Collections.reverseOrder());
-        for (int i = 0; i < data.size() - 1; i++) {
+        Collections.sort(parsedData, Collections.reverseOrder());
+        for (int i = 0; i < parsedData.size() - 1; i++) {
             splits.add((parsedData.get(i) + parsedData.get(i + 1)) / 2);
         }
         return splits;
