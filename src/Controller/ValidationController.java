@@ -23,7 +23,7 @@ import javax.swing.table.DefaultTableModel;
 public class ValidationController extends SwingWorker{
     
     private Data data;
-    private Data data_supply;
+//    private Data data_supply;
     private HashMap<String, String> konfig;
     private JButton tombol_mulai;
     private JPanel panel_log;
@@ -125,22 +125,22 @@ public class ValidationController extends SwingWorker{
         return data;
     }
     
-    private void doSupplyTest(){
-        this.panel_log.removeAll();
-        this.writeLogProcess("-- Supply Testing Set --");
-        this.writeLogProcess(" ");
-        this.writeLogProcess("Jumlah Data Latih : "+this.data.getJumlahData());
-        this.writeJumlahSebaranLabel(this.data, "Latih");
-        this.writeLogProcess(" ");
-        this.writeLogProcess("Jumlah Data Uji : "+this.data_supply.getJumlahData());
-        this.writeJumlahSebaranLabel(this.data_supply, "Latih");
-        long waktu_eksekusi       = System.currentTimeMillis();
-        if(this.konfig.get("Algoritma").equalsIgnoreCase("Naive Bayes")){
-         this.matriks = new NaiveBayes(this.matriks, this.data.getLabel()).doNaiveBayes(this.data, this.data_supply);       
-        }else if(this.konfig.get("Algoritma").equalsIgnoreCase("C4.5")){ }    
-        this.writeLogProcess("Waktu Eksekusi : "+(double)(System.currentTimeMillis()-waktu_eksekusi)/1000+" detik");
-        this.setMatriksConfussion();
-    }
+//    private void doSupplyTest(){
+//        this.panel_log.removeAll();
+//        this.writeLogProcess("-- Supply Testing Set --");
+//        this.writeLogProcess(" ");
+//        this.writeLogProcess("Jumlah Data Latih : "+this.data.getJumlahData());
+//        this.writeJumlahSebaranLabel(this.data, "Latih");
+//        this.writeLogProcess(" ");
+//        this.writeLogProcess("Jumlah Data Uji : "+this.data_supply.getJumlahData());
+//        this.writeJumlahSebaranLabel(this.data_supply, "Latih");
+//        long waktu_eksekusi       = System.currentTimeMillis();
+//        if(this.konfig.get("Algoritma").equalsIgnoreCase("Naive Bayes")){
+//         this.matriks = new NaiveBayes(this.matriks, this.data.getLabel()).doNaiveBayes(this.data, this.data_supply);       
+//        }else if(this.konfig.get("Algoritma").equalsIgnoreCase("C4.5")){ }    
+//        this.writeLogProcess("Waktu Eksekusi : "+(double)(System.currentTimeMillis()-waktu_eksekusi)/1000+" detik");
+//        this.setMatriksConfussion();
+//    }
     
     private void doSplitValidation(){
        
@@ -197,9 +197,9 @@ public class ValidationController extends SwingWorker{
     }
     
     
-    public void setData_supply(Data data_supply) {
-        this.data_supply = data_supply;
-    }
+//    public void setData_supply(Data data_supply) {
+//        this.data_supply = data_supply;
+//    }
     
 
     @Override
@@ -210,9 +210,10 @@ public class ValidationController extends SwingWorker{
             this.doSplitValidation();
         }else if(this.konfig.get("Tipe").equalsIgnoreCase("Cross")){
             this.doCrossValidation();
-        }else if(this.konfig.get("Tipe").equalsIgnoreCase("Supply")){
-            this.doSupplyTest();
         }
+//        else if(this.konfig.get("Tipe").equalsIgnoreCase("Supply")){
+//            this.doSupplyTest();
+//        }
         return null;
     }
     

@@ -68,10 +68,7 @@ public class Home extends javax.swing.JFrame {
         jPanel23 = new javax.swing.JPanel();
         kfold = new javax.swing.JSpinner();
         data1 = new javax.swing.JPanel();
-        jPanel12 = new javax.swing.JPanel();
-        supply_test = new javax.swing.JRadioButton();
         jPanel13 = new javax.swing.JPanel();
-        atur_supply_test = new javax.swing.JButton();
         NB = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
@@ -288,35 +285,8 @@ public class Home extends javax.swing.JFrame {
         data1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         data1.setLayout(new javax.swing.BoxLayout(data1, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel12.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel12.setPreferredSize(new java.awt.Dimension(50, 468));
-        jPanel12.setLayout(new java.awt.BorderLayout());
-
-        validation_type.add(supply_test);
-        supply_test.setFont(new java.awt.Font("Century Gothic", 0, 11)); // NOI18N
-        supply_test.setText("Supply Test");
-        supply_test.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        supply_test.setFocusPainted(false);
-        supply_test.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jPanel12.add(supply_test, java.awt.BorderLayout.CENTER);
-
-        data1.add(jPanel12);
-
         jPanel13.setPreferredSize(new java.awt.Dimension(50, 474));
         jPanel13.setLayout(new java.awt.BorderLayout());
-
-        atur_supply_test.setFont(new java.awt.Font("Century Gothic", 0, 11)); // NOI18N
-        atur_supply_test.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/data_icon.png"))); // NOI18N
-        atur_supply_test.setText("Atur Data");
-        atur_supply_test.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        atur_supply_test.setFocusPainted(false);
-        atur_supply_test.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                atur_supply_testActionPerformed(evt);
-            }
-        });
-        jPanel13.add(atur_supply_test, java.awt.BorderLayout.CENTER);
-
         data1.add(jPanel13);
 
         jPanel7.add(data1);
@@ -519,10 +489,6 @@ public class Home extends javax.swing.JFrame {
        this.main.frameData("Data");
     }//GEN-LAST:event_atur_DataActionPerformed
 
-    private void atur_supply_testActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atur_supply_testActionPerformed
-       this.main.frameData("Supply");
-    }//GEN-LAST:event_atur_supply_testActionPerformed
-
     private void do_naive_bayesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_do_naive_bayesActionPerformed
         HashMap<String, String> konfig = this.getValidationType();
         konfig.put("Algoritma", "Naive Bayes");
@@ -543,8 +509,6 @@ public class Home extends javax.swing.JFrame {
         }else if(this.cross_validation.isSelected()){
             konfig.put("Tipe", "Cross");
             konfig.put("Kfold", this.kfold.getValue().toString());
-        }else if(this.supply_test.isSelected()){
-            konfig.put("Tipe", "Supply");
         }
         return konfig;
     }
@@ -591,7 +555,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel MC1;
     private javax.swing.JPanel NB;
     private javax.swing.JButton atur_Data;
-    private javax.swing.JButton atur_supply_test;
     private javax.swing.JPanel cross;
     private javax.swing.JRadioButton cross_validation;
     private javax.swing.JPanel data;
@@ -607,7 +570,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -642,7 +604,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel split;
     private javax.swing.JSpinner split_ratio;
     private javax.swing.JRadioButton split_validation;
-    private javax.swing.JRadioButton supply_test;
     private javax.swing.ButtonGroup validation_type;
     // End of variables declaration//GEN-END:variables
 }
