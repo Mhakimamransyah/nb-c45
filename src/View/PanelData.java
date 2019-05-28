@@ -83,7 +83,7 @@ public class PanelData extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Pengaturan Data");
         setMinimumSize(new java.awt.Dimension(600, 125));
-        setPreferredSize(new java.awt.Dimension(900, 550));
+        setPreferredSize(new java.awt.Dimension(901, 550));
 
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 526));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));

@@ -18,12 +18,12 @@ import javax.swing.JTable;
  */
 public class Main {
 
-    private DataController data;
-    private DataController data_supply;
+    private DataController data = null;
+//    private DataController data_supply;
     
     public Main(){
-        this.data         = new DataController("Data Latih");
-        this.data_supply  = new DataController("Data Uji");
+        this.data         = new DataController("Data");
+//        this.data_supply  = new DataController("Data Uji");
     }
     
     public static void main(String[] args) {
@@ -40,23 +40,25 @@ public class Main {
        if(jenis.equalsIgnoreCase("Data")){
           this.data.panelData();
        }else if(jenis.equalsIgnoreCase("Supply")){
-          this.data_supply.panelData();
+//          this.data_supply.panelData();
        }
     }
     
     public void do_validation(HashMap<String, String> konfig,JButton btn, JPanel log, JTable matrix_table){
-       this.data.acakData();
-       ValidationController validasi = new ValidationController(this.data.getData(),konfig, btn, log, matrix_table);
-       
-       if(konfig.get("Tipe").equalsIgnoreCase("Supply")){
-          if(this.data_supply.getData() != null){
-            validasi.setData_supply(this.data_supply.getData());
-            validasi.execute();   
-          }else{
-            JOptionPane.showMessageDialog(null,"Data testing belom ada", "OoOps !!",JOptionPane.ERROR_MESSAGE);
-          } 
+       if(this.data.getData() != null){
+         ValidationController validasi = new ValidationController(this.data.getData(),konfig, btn, log, matrix_table);
+         if(konfig.get("Tipe").equalsIgnoreCase("Supply")){
+//            if(this.data_supply.getData() != null){
+//              validasi.setData_supply(this.data_supply.getData());
+//              validasi.execute();   
+//            }else{
+//              JOptionPane.showMessageDialog(null,"Data testing belom ada", "OoOps !!",JOptionPane.ERROR_MESSAGE);
+//            } 
+         }else{
+           validasi.execute();      
+         }   
        }else{
-         validasi.execute();      
+           JOptionPane.showMessageDialog(null,"Data belom ada", "OoOps !!",JOptionPane.ERROR_MESSAGE);
        }
     }
 }
