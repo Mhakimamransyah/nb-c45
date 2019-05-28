@@ -95,6 +95,7 @@ public class ValidationController extends SwingWorker{
         if(jenis.equalsIgnoreCase("uji")){
            for(int i=0;i<this.data.getJumlahFitur();i++){
                temp = new Fitur();
+               temp.setNama_fitur(this.data.getFitur().get(i).getNama_fitur());
                temp.setTipe(this.data.getFitur().get(i).getTipe());
                for(int j=index_awal;j<index_akhir;j++){
                  temp.tambah_nilai(this.data.getFitur().get(i).getKolom_nilai().get(j));
@@ -104,6 +105,7 @@ public class ValidationController extends SwingWorker{
         }else if(jenis.equalsIgnoreCase("latih")){
            for(int i=0;i<this.data.getJumlahFitur();i++){
               temp = new Fitur();
+              temp.setNama_fitur(this.data.getFitur().get(i).getNama_fitur());
               temp.setTipe(this.data.getFitur().get(i).getTipe());
               for(int j=0;j<this.data.getJumlahData();j++){
                   if(!(j>=index_awal && j <index_akhir)){
@@ -115,6 +117,7 @@ public class ValidationController extends SwingWorker{
         }else{
            for(int i=0;i<this.data.getJumlahFitur();i++){
               temp = new Fitur();
+              temp.setNama_fitur(this.data.getFitur().get(i).getNama_fitur());
               temp.setTipe(this.data.getFitur().get(i).getTipe());
               for(int j=index_awal;j<index_akhir;j++){
                   temp.tambah_nilai(this.data.getFitur().get(i).getKolom_nilai().get(j));
