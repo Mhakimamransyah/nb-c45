@@ -32,8 +32,10 @@ public class MatrixConfussion {
         
         int index = 1;
         for(String value : this.label){
-            this.matriks[this.matriks.length-1][index] = df.format(this.getRecall(value)).replaceAll(",",".")+" %";
-            this.matriks[index][this.matriks.length-1] = df.format(this.getPresisi(value)).replaceAll(",",".")+" %";
+            // this.matriks[this.matriks.length-1][index] = df.format(this.getRecall(value)).replaceAll(",",".")+" %";
+            // this.matriks[index][this.matriks.length-1] = df.format(this.getPresisi(value)).replaceAll(",",".")+" %";
+            this.matriks[this.matriks.length-1][index] = "-";
+            this.matriks[index][this.matriks.length-1] = "-";
             index++;
         }
         this.matriks[this.matriks.length-1][this.matriks.length-1] = df.format(this.getAkurasi()).replaceAll(",",".")+" %";
@@ -126,8 +128,10 @@ public class MatrixConfussion {
         int jumlah_label        = label.size();
         this.matriks = new String[jumlah_label+2][jumlah_label+2];
         this.matriks[0][0]              = "Aktual/Klasifikasi";
-        this.matriks[0][this.matriks[0].length-1] = "Presisi";
-        this.matriks[this.matriks.length-1][0] = "Recall";
+        // this.matriks[0][this.matriks[0].length-1] = "Presisi";
+        // this.matriks[this.matriks.length-1][0] = "Recall";
+        this.matriks[0][this.matriks[0].length-1] = "-";
+        this.matriks[this.matriks.length-1][0] = "-";
         
         for(int i=0;i<this.matriks[0].length;i++){
             if( i != 0 && i != (this.matriks[0].length-1)){
